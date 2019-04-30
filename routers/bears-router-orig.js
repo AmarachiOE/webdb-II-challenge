@@ -1,14 +1,20 @@
+const knex = require("knex");
 const bearsRouter = require("express").Router(); // is requiring express and Router simultaneously
-const bearsDb = require("../data/helpers/bearsModel.js");
+
+
+// import knexfile instead of hard-coding
+const knexConfig = require('../knexfile.js');
+const bearsDb = knex(knexConfig.development);
+
 
 // ============ GET ALL
 bearsRouter.get("/", (req, res) => {
-  bearsDb
-    .find()
+  bearsDb("bears")
     .then(bears => {
       res.status(200).json(bears);
     })
     .catch(err => {
+      console.log(err);
       res
         .status(500)
         .json({ error: "The bears information could not be retrieved." });
@@ -17,9 +23,9 @@ bearsRouter.get("/", (req, res) => {
 
 // ============ GET BY ID
 bearsRouter.get("/:id", (req, res) => {
-  const bearId = req.params.id;
-  bearsDb
-    .findById(bearId)
+  bearsDb("bears")
+    .where({ id: req.params.id })
+    .first()
     .then(bear => {
       if (bear) {
         res.status(200).json(bear);
@@ -42,7 +48,7 @@ bearsRouter.post("/", (req, res) => {
       error: "You must include a bear with a name."
     });
   } else {
-    bearsDb
+    bearsDb("bears")
       .insert(bear, "id")
       .then(results => {
         res.status(200).json(results);
@@ -57,9 +63,9 @@ bearsRouter.post("/", (req, res) => {
 
 // ============ DELETE
 bearsRouter.delete("/:id", (req, res) => {
-  const bearId = req.params.id;
-  bearsDb
-    .remove(bearId)
+  bearsDb("bears")
+    .where({ id: req.params.id })
+    .delete()
     .then(count => {
       if (count > 0) {
         res.status(200).json({
@@ -79,14 +85,14 @@ bearsRouter.delete("/:id", (req, res) => {
 // ============ UPDATE
 bearsRouter.put("/:id", (req, res) => {
   const bear = req.body;
-  const bearId = req.params.id;
   if (!bear || !bear.name) {
     res.status(400).json({
       error: "You must include a bear with a name."
     });
   } else {
-    bearsDb
-      .update(bearId, bear)
+    bearsDb("bears")
+      .where({ id: req.params.id })
+      .update(req.body)
       .then(count => {
         if (count > 0) {
           res.status(200).json({

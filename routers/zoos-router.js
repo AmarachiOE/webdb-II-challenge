@@ -1,5 +1,5 @@
 const knex = require("knex");
-const zoosRouter = require("express").Router();
+const zoosRouter = require("express").Router(); // is requiring express and Router simultaneously
 
 // import knexfile instead of hard-coding it
 const knexConfig = require('../knexfile.js');
