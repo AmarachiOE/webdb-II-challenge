@@ -4,6 +4,7 @@ const helmet = require("helmet");
 
 // Routers
 const zoosRouter = require("../routers/zoos-router.js");
+const bearsRouter = require("../routers/bears-router");
 
 // Server
 const server = express();
@@ -15,5 +16,6 @@ server.get("/", (req, res) => {
 });
 
 server.use("/api/zoos", zoosRouter);
+server.use("/api/bears", bearsRouter);
 
 module.exports = server;

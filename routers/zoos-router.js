@@ -74,7 +74,7 @@ zoosRouter.delete("/:id", (req, res) => {
     .then(count => {
       if (count > 0) {
         res.status(200).json({
-          message: `${count} ${count > 1 ? "records" : "record"} deleted`
+          message: `${count} ${count > 1 ? "zoos" : "zoo"} deleted`
         });
       } else {
         res.status(404).json({ error: "This zoo could not be found." });
@@ -101,7 +101,7 @@ zoosRouter.put("/:id", (req, res) => {
       .then(count => {
         if (count > 0) {
           res.status(200).json({
-            message: `${count} ${count > 1 ? "records" : "record"} updated`
+            message: `${count} ${count > 1 ? "zoos" : "zoo"} updated`
           });
         } else {
           res.status(404).json({ error: "This zoo could not be found." });
