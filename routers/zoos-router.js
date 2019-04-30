@@ -1,16 +1,9 @@
 const knex = require("knex");
 const zoosRouter = require("express").Router();
 
-const knexConfig = {
-  client: "sqlite3",
-  connection: {
-    filename: "./data/lambda.sqlite3"
-  },
-  useNullAsDefault: true,
-  debug: true
-};
-
-const zoosDb = knex(knexConfig);
+// import knexfile instead of hard-coding it
+const knexConfig = require('../knexfile.js');
+const zoosDb = knex(knexConfig.development);
 
 // ============ GET ALL
 zoosRouter.get("/", (req, res) => {
@@ -30,7 +23,7 @@ zoosRouter.get("/", (req, res) => {
 zoosRouter.get("/:id", (req, res) => {
   zoosDb("zoos")
     .where({ id: req.params.id })
-    .first()
+    .first() // first item in array
     .then(zoo => {
       if (zoo) {
         res.status(200).json(zoo);
@@ -68,11 +61,16 @@ zoosRouter.post("/", (req, res) => {
 
 // ============ DELETE
 zoosRouter.delete("/:id", (req, res) => {
+  const deletedZoo = zoosDb("zoos")
+    .where({ id: req.params.id })
+    .first();
+
   zoosDb("zoos")
     .where({ id: req.params.id })
     .delete()
     .then(count => {
       if (count > 0) {
+        console.log(deletedZoo); // not sure?
         res.status(200).json({
           message: `${count} ${count > 1 ? "zoos" : "zoo"} deleted`
         });
@@ -86,6 +84,27 @@ zoosRouter.delete("/:id", (req, res) => {
       });
     });
 });
+
+// ========= Alternative: delete zoo
+// zoosRouter.delete("/:id", async (req, res) => {
+//     try {
+//       const getDeleteZoo = await zoosDb("zoos")
+//         .where({ id: req.params.id })
+//         .first();
+
+//       const deleteZoo = await zoosDb("zoos")
+//         .where({ id: req.params.id })
+//         .delete(req.body, "id");
+
+//       if (!getDeleteZoo) {
+//         res.status(404).json({ msg: "id does not exist" });
+//       } else {
+//         res.status(200).json(getDeleteZoo);
+//       }
+//     } catch (err) {
+//       res.status(500).json({ msg: err });
+//     }
+//   });
 
 // ============ UPDATE
 zoosRouter.put("/:id", (req, res) => {

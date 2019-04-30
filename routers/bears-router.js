@@ -1,16 +1,11 @@
 const knex = require("knex");
 const bearsRouter = require("express").Router();
 
-const knexConfig = {
-  client: "sqlite3",
-  connection: {
-    filename: "./data/lambda.sqlite3"
-  },
-  useNullAsDefault: true,
-  debug: true
-};
 
-const bearsDb = knex(knexConfig);
+// import knexfile instead of hard-coding
+const knexConfig = require('../knexfile.js');
+const bearsDb = knex(knexConfig.development);
+
 
 // ============ GET ALL
 bearsRouter.get("/", (req, res) => {
