@@ -68,7 +68,25 @@ zoosRouter.post("/", (req, res) => {
 
 // ============ DELETE
 zoosRouter.delete("/:id", (req, res) => {
-  res.send("Start writing your code");
+  zoosDb("zoos")
+    .where({ id: req.params.id })
+    .delete()
+    .then(count => {
+      if (count > 0) {
+        res
+          .status(200)
+          .json({
+            message: `${count} ${count > 1 ? "records" : "record"} deleted`
+          });
+      } else {
+        res.status(404).json({ error: "This zoo could not be found." });
+      }
+    })
+    .catch(err => {
+      res.status(500).json({
+        error: "There was an error while deleting the zoo from the database"
+      });
+    });
 });
 
 // ============ UPDATE
